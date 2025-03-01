@@ -4,6 +4,7 @@ import { Position, Piece, PieceType, PieceColor } from '../types/index';
 import { useGameWebSocket } from '../hooks/useGameWebSocket';
 import { calculatePossibleMoves } from '../utils/moveUtils';
 import { getInitialPieces, getPieceSymbol } from '../utils/getInitialPieces';
+import GameOverModal from './GameOverModal';
 
 interface BoardProps {
   gameId: string;
@@ -13,6 +14,7 @@ export const Board: React.FC<BoardProps> = ({ gameId }) => {
   const [selectedPosition, setSelectedPosition] = useState<Position | null>(null);
   const [pieces, setPieces] = useState<Piece[]>(getInitialPieces());
   const [validMoves, setValidMoves] = useState<Position[]>([]);
+  const [gameOverMessage, setGameOverMessage] = useState<string | null>(null);
   const { sendMove } = useGameWebSocket(gameId, (message) => {
     // Handle incoming moves
     setPieces(pieces.map(p =>
@@ -63,6 +65,8 @@ export const Board: React.FC<BoardProps> = ({ gameId }) => {
               ? new Piece(piece.type, piece.color, position) // Move the piece
               : p
           ));
+
+          if (targetPiece) checkGameOver(targetPiece);
         }
       }
 
@@ -70,6 +74,25 @@ export const Board: React.FC<BoardProps> = ({ gameId }) => {
       setSelectedPosition(null);
       setValidMoves([]);
     }
+  };
+
+  const checkGameOver = (targetPiece: Piece) => {
+    const redGeneralCaptured = targetPiece.type === PieceType.GENERAL && targetPiece.color === PieceColor.RED;
+    const blackGeneralCaptured = targetPiece.type === PieceType.GENERAL && targetPiece.color === PieceColor.BLACK;
+
+    if (redGeneralCaptured) {
+      setGameOverMessage("Black wins! Red general has been captured.");
+    } else if (blackGeneralCaptured) {
+      setGameOverMessage("Red wins! Black general has been captured.");
+    }
+  };
+
+  const handleCloseModal = () => {
+    // Reset the game state
+    setPieces(getInitialPieces()); // Reset pieces to their initial positions
+    setSelectedPosition(null); // Clear selected position
+    setValidMoves([]); // Clear valid moves
+    setGameOverMessage(null); // Close the modal
   };
 
   return (
@@ -137,6 +160,10 @@ export const Board: React.FC<BoardProps> = ({ gameId }) => {
           );
         })}
       </div>
+
+      {gameOverMessage && (
+        <GameOverModal message={gameOverMessage} onClose={handleCloseModal} />
+      )}
     </div>
   );
 };
