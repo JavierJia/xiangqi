@@ -324,6 +324,7 @@ function calculateHorseMoves(piece: Piece, pieces: Piece[]): Position[] {
     const pieceAtPosition = pieces.find(p => 
       p.position.x === move.x && p.position.y === move.y
     );
+    if (move.x < 0 || move.x> 8 || move.x < 0 || move.y> 9) continue; // Out of bounds
     if (!pieceAtPosition || pieceAtPosition.color !== piece.color) {
       // Check if the horse's path is blocked
       const isBlocked = pieces.some(p => 
