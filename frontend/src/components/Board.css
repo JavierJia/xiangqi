@@ -1,0 +1,106 @@
+.board {
+    position: relative;
+    width: 90vmin;
+    height: 100vmin;
+    margin: 0 auto;
+    background: #DEB887;
+}
+
+/* Add border area */
+.border-area {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #8B4513;  /* Dark brown for border area */
+}
+
+/* Playable area */
+.playable-area {
+    position: absolute;
+    width: 90%;          /* Increased from 80% */
+    height: 90.91%;      /* Increased from 81.82% */
+    top: 4.545%;         /* Reduced from 9.09% */
+    left: 5%;           /* Reduced from 10% */
+    background: #DEB887;
+}
+
+.grid-lines {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.grid-lines .vertical-line,
+.grid-lines .horizontal-line {
+    position: absolute;
+    background: #8B4513;  /* Unified color for all lines */
+}
+
+.vertical-line {
+    width: 2px;
+    height: 100%;
+    transform: translateX(-1px);
+}
+
+.horizontal-line {
+    width: 100%;
+    height: 2px;
+    transform: translateY(-1px);
+}
+
+.river {
+    position: absolute;
+    top: 40%;
+    height: 20%;
+    width: 100%;
+    opacity: 0.1;
+    background: #4169E1;
+}
+
+.piece {
+    position: absolute;
+    width: calc(100% / 11);    /* Increased from 100% / 13 */
+    height: calc(100% / 11);   /* Increased from 100% / 13 */
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4vmin;          /* Increased from 3.5vmin */
+    background: #f0d9b5;
+    border-radius: 50%;
+    border: 2px solid #000;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.piece.red {
+    color: red;
+}
+
+.piece.black {
+    color: black;
+}
+
+.piece.selected {
+    background: #90EE90;
+}
+
+.square {
+    position: absolute;
+    width: calc(100% / 11);    /* Match piece size */
+    height: calc(100% / 11);   /* Match piece size */
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    cursor: pointer;
+}
+
+.valid-move {
+    position: absolute;
+    width: 11.11%;
+    height: 10%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 255, 0, 0.5); /* Slightly more visible */
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;
+}
