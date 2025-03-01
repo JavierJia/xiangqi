@@ -3,7 +3,7 @@ import './Board.css';
 import { Position, Piece, PieceType, PieceColor } from '../types/index';
 import { useGameWebSocket } from '../hooks/useGameWebSocket';
 import { calculatePossibleMoves } from '../utils/moveUtils';
-import { getInitialPieces } from '../utils/getInitialPieces';
+import { getInitialPieces, getPieceSymbol } from '../utils/getInitialPieces';
 
 interface BoardProps {
   gameId: string;
@@ -142,26 +142,3 @@ export const Board: React.FC<BoardProps> = ({ gameId }) => {
 };
 
 
-function getPieceSymbol(piece: Piece): string {
-  const symbols: Record<PieceColor, Record<PieceType, string>> = {
-    [PieceColor.RED]: {
-      [PieceType.GENERAL]: '帥',
-      [PieceType.ADVISOR]: '仕',
-      [PieceType.ELEPHANT]: '相',
-      [PieceType.HORSE]: '馬',
-      [PieceType.CHARIOT]: '車',
-      [PieceType.CANNON]: '炮',
-      [PieceType.SOLDIER]: '兵',
-    },
-    [PieceColor.BLACK]: {
-      [PieceType.GENERAL]: '將',
-      [PieceType.ADVISOR]: '士',
-      [PieceType.ELEPHANT]: '象',
-      [PieceType.HORSE]: '馬',
-      [PieceType.CHARIOT]: '車',
-      [PieceType.CANNON]: '炮',
-      [PieceType.SOLDIER]: '卒',
-    },
-  };
-  return symbols[piece.color][piece.type];
-}
