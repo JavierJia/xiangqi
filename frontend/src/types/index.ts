@@ -34,3 +34,4 @@ export enum PieceColor {
   RED = 'red',
   BLACK = 'black'
 }
+
