@@ -15,7 +15,7 @@ export const Board: React.FC<BoardProps> = ({ gameId }) => {
   const [validMoves, setValidMoves] = useState<Position[]>([]);
   const { sendMove } = useGameWebSocket(gameId, (message) => {
     // Handle incoming moves
-    setPieces(pieces.map(p => 
+    setPieces(pieces.map(p =>
       (p.position.x === message.from.x && p.position.y === message.from.y)
         ? new Piece(p.type, p.color, message.to)
         : p
@@ -25,8 +25,8 @@ export const Board: React.FC<BoardProps> = ({ gameId }) => {
   const handleSquareClick = (position: Position) => {
     if (!selectedPosition) {
       // Select piece
-      const piece = pieces.find(p => 
-        p.position.x === position.x && 
+      const piece = pieces.find(p =>
+        p.position.x === position.x &&
         p.position.y === position.y
       );
       if (piece) {
@@ -37,29 +37,35 @@ export const Board: React.FC<BoardProps> = ({ gameId }) => {
       }
     } else {
       // Try to move piece
-      const isValidMove = validMoves.some(move => 
+      const isValidMove = validMoves.some(move =>
         move.x === position.x && move.y === position.y
       );
 
       if (isValidMove) {
-        const piece = pieces.find(p => 
-          p.position.x === selectedPosition.x && 
+        const piece = pieces.find(p =>
+          p.position.x === selectedPosition.x &&
           p.position.y === selectedPosition.y
         );
-        
+
         if (piece) {
+          // Check if the target position has an opponent's piece
+          const targetPiece = pieces.find(p =>
+            p.position.x === position.x && p.position.y === position.y
+          );
           // Send move through WebSocket
           sendMove(selectedPosition, position, piece);
-          
+
           // Update local state
-          setPieces(pieces.map(p => 
+          setPieces(pieces.filter(p =>
+            !(targetPiece && p.position.x === targetPiece.position.x && p.position.y === targetPiece.position.y) // Remove captured piece
+          ).map(p =>
             (p.position.x === selectedPosition.x && p.position.y === selectedPosition.y)
-              ? new Piece(p.type, p.color, position)
+              ? new Piece(piece.type, piece.color, position) // Move the piece
               : p
           ));
         }
       }
-      
+
       // Clear selection
       setSelectedPosition(null);
       setValidMoves([]);
@@ -70,16 +76,16 @@ export const Board: React.FC<BoardProps> = ({ gameId }) => {
     <div className="board">
       {/* Border area */}
       <div className="border-area" />
-      
+
       {/* Playable area */}
       <div className="playable-area">
         {/* Grid lines */}
         <div className="grid-lines">
           {Array(9).fill(0).map((_, x) => (
-            <div key={`vertical-${x}`} className="vertical-line" style={{ left: `${x * (100/8)}%` }} />
+            <div key={`vertical-${x}`} className="vertical-line" style={{ left: `${x * (100 / 8)}%` }} />
           ))}
           {Array(10).fill(0).map((_, y) => (
-            <div key={`horizontal-${y}`} className="horizontal-line" style={{ top: `${y * (100/9)}%` }} />
+            <div key={`horizontal-${y}`} className="horizontal-line" style={{ top: `${y * (100 / 9)}%` }} />
           ))}
         </div>
 
@@ -102,13 +108,12 @@ export const Board: React.FC<BoardProps> = ({ gameId }) => {
         {pieces.map((piece, index) => (
           <div
             key={`piece-${index}`}
-            className={`piece ${piece.color} ${piece.type} ${
-              selectedPosition?.x === piece.position.x && 
+            className={`piece ${piece.color} ${piece.type} ${selectedPosition?.x === piece.position.x &&
               selectedPosition?.y === piece.position.y ? 'selected' : ''
-            }`}
+              }`}
             style={{
-              left: `${piece.position.x * (100/8)}%`,
-              top: `${piece.position.y * (100/9)}%`
+              left: `${piece.position.x * (100 / 8)}%`,
+              top: `${piece.position.y * (100 / 9)}%`
             }}
           >
             {getPieceSymbol(piece)}
@@ -124,8 +129,8 @@ export const Board: React.FC<BoardProps> = ({ gameId }) => {
               key={`square-${x}-${y}`}
               className="square"
               style={{
-                left: `${x * (100/8)}%`,
-                top: `${y * (100/9)}%`
+                left: `${x * (100 / 8)}%`,
+                top: `${y * (100 / 9)}%`
               }}
               onClick={() => handleSquareClick({ x, y })}
             />
