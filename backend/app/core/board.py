@@ -7,6 +7,8 @@ class Board:
         self.height = 10
         self.board = self._initialize_board()
         self.current_turn = Color.RED
+        self.pieces: List[Piece] = []
+        self.initialize_board()
     
     def _initialize_board(self) -> List[List[Optional[Piece]]]:
         """Initialize the board with starting positions"""
@@ -23,7 +25,9 @@ class Board:
     def _place_piece(self, x: int, y: int, piece_type: PieceType, 
                      color: Color, board: List[List[Optional[Piece]]]):
         """Helper method to place a piece on the board"""
-        board[y][x] = Piece(piece_type, color)
+        piece = Piece(piece_type, color)
+        board[y][x] = piece
+        self.pieces.append(piece)
     
     def make_move(self, from_pos: Tuple[int, int], 
                   to_pos: Tuple[int, int]) -> bool:
@@ -63,3 +67,14 @@ class Board:
         """
         # TODO: Implement checkmate detection
         return False, None
+
+    def initialize_board(self):
+        # Initialize pieces in their starting positions
+        pass
+
+    def get_piece_at(self, x: int, y: int) -> Optional[Piece]:
+        return next((p for p in self.pieces if p.x == x and p.y == y), None)
+
+    def is_valid_move(self, piece: Piece, to_x: int, to_y: int) -> bool:
+        # Implement move validation logic
+        return True

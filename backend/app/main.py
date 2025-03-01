@@ -1,6 +1,6 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Tuple
 from pydantic import BaseModel
 from .core.board import Board
 from .core.piece import Piece, PieceType, Color
@@ -50,6 +50,14 @@ class GameState(BaseModel):
     game_over: bool
     winner: Optional[str]
 
+class ValidMovesRequest(BaseModel):
+    position: Position
+    piece_type: PieceType
+    color: Color
+
+class ValidMovesResponse(BaseModel):
+    moves: List[Position]
+
 @app.get("/")
 async def root():
     return {"message": "Xiangqi Game API"}
@@ -70,6 +78,7 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str):
     try:
         while True:
             data = await websocket.receive_json()
+            print("Received message:", data)  # Log the received message
             # Process move and broadcast to other player
             await manager.broadcast_move(game_id, {
                 "type": "MOVE",

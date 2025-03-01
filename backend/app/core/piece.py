@@ -18,24 +18,26 @@ class Color(Enum):
     BLACK = "black"
 
 class Piece:
-    def __init__(self, piece_type: PieceType, color: Color):
-        self.piece_type = piece_type
+    def __init__(self, piece_type: PieceType, color: Color, x: int, y: int):
+        self.type = piece_type
         self.color = color
+        self.x = x
+        self.y = y
     
     def get_legal_moves(self, position: Tuple[int, int], board: 'Board') -> List[Tuple[int, int]]:
-        if self.piece_type == PieceType.GENERAL:
+        if self.type == PieceType.GENERAL:
             return self._get_general_moves(position, board)
-        elif self.piece_type == PieceType.ADVISOR:
+        elif self.type == PieceType.ADVISOR:
             return self._get_advisor_moves(position, board)
-        elif self.piece_type == PieceType.ELEPHANT:
+        elif self.type == PieceType.ELEPHANT:
             return self._get_elephant_moves(position, board)
-        elif self.piece_type == PieceType.HORSE:
+        elif self.type == PieceType.HORSE:
             return self._get_horse_moves(position, board)
-        elif self.piece_type == PieceType.CHARIOT:
+        elif self.type == PieceType.CHARIOT:
             return self._get_chariot_moves(position, board)
-        elif self.piece_type == PieceType.CANNON:
+        elif self.type == PieceType.CANNON:
             return self._get_cannon_moves(position, board)
-        elif self.piece_type == PieceType.SOLDIER:
+        elif self.type == PieceType.SOLDIER:
             return self._get_soldier_moves(position, board)
         return []
     
