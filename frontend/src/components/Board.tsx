@@ -15,6 +15,7 @@ export const Board: React.FC<BoardProps> = ({ gameId }) => {
   const [pieces, setPieces] = useState<Piece[]>(getInitialPieces());
   const [validMoves, setValidMoves] = useState<Position[]>([]);
   const [gameOverMessage, setGameOverMessage] = useState<string | null>(null);
+  const [currentPlayer, setCurrentPlayer] = useState<PieceColor>(PieceColor.RED); // Start with Red
   const { sendMove } = useGameWebSocket(gameId, (message) => {
     // Handle incoming moves
     setPieces(pieces.map(p =>
@@ -31,10 +32,12 @@ export const Board: React.FC<BoardProps> = ({ gameId }) => {
         p.position.x === position.x &&
         p.position.y === position.y
       );
-      if (piece) {
+
+      // Check if the piece belongs to the current player
+      if (piece && piece.color === currentPlayer) {
         setSelectedPosition(position);
         // Calculate valid moves directly on the frontend
-        const validMoves = piece.getLegalMoves(pieces, calculatePossibleMoves);
+        const validMoves = calculatePossibleMoves(piece, pieces);
         setValidMoves(validMoves);
       }
     } else {
@@ -44,29 +47,32 @@ export const Board: React.FC<BoardProps> = ({ gameId }) => {
       );
 
       if (isValidMove) {
-        const piece = pieces.find(p =>
+        const movingPiece = pieces.find(p =>
           p.position.x === selectedPosition.x &&
           p.position.y === selectedPosition.y
         );
 
-        if (piece) {
+        if (movingPiece) {
           // Check if the target position has an opponent's piece
           const targetPiece = pieces.find(p =>
             p.position.x === position.x && p.position.y === position.y
           );
+
           // Send move through WebSocket
-          sendMove(selectedPosition, position, piece);
+          sendMove(selectedPosition, position, movingPiece);
 
           // Update local state
           setPieces(pieces.filter(p =>
             !(targetPiece && p.position.x === targetPiece.position.x && p.position.y === targetPiece.position.y) // Remove captured piece
           ).map(p =>
             (p.position.x === selectedPosition.x && p.position.y === selectedPosition.y)
-              ? new Piece(piece.type, piece.color, position) // Move the piece
+              ? new Piece(movingPiece.type, movingPiece.color, position) // Move the piece
               : p
           ));
 
           if (targetPiece) checkGameOver(targetPiece);
+          // Switch to the next player
+          setCurrentPlayer(currentPlayer === PieceColor.RED ? PieceColor.BLACK : PieceColor.RED);
         }
       }
 
